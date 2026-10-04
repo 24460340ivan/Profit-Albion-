@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Albion Online - Calculadora de Bienes de Lujo</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            albion: {
+              gold: '#e5b85c',
+              goldHover: '#cfa246',
+              silver: '#b0c4de',
+              bg: '#0c0f14',
+              panel: '#151922',
+              card: '#1b222e',
+              border: '#273142',
+              green: '#22c55e',
+              red: '#ef4444'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(circle at top, #141b27 0%, #0c0f14 100%);
+      min-height: 100vh;
+    }
+    .font-albion {
+      font-family: 'Cinzel', serif;
+    }
+    /* Estilos personalizados para sliders e inputs numéricos */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body class="text-slate-200 antialiased selection:bg-albion-gold selection:text-black p-3 sm:p-6 lg:p-8">
+
+  <div class="max-w-6xl mx-auto space-y-6">
+    <!-- Encabezado Principal -->
+    <header class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-albion-border/70 pb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-albion-card border border-albion-gold/40 flex items-center justify-center shadow-lg shadow-albion-gold/5">
+          <!-- Ícono de Cofre / Monedas -->
+          <svg class="w-6 h-6 text-albion-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold font-albion tracking-wide text-white flex items-center gap-2">
+            Albion <span class="text-albion-gold">Profit</span> Luxury
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-400">Calculadora de arbitraje y transporte de Bienes de Lujo</p>
+        </div>
+      </div>
+
+      <!-- Quick Toggles: Premium & Reset -->
+      <div class="flex items-center gap-3">
+        <!-- Switch Premium -->
+        <label class="relative inline-flex items-center cursor-pointer bg-albion-card border border-albion-border px-3.5 py-2 rounded-xl select-none hover:border-albion-gold/40 transition">
+          <input type="checkbox" id="premiumToggle" class="sr-only peer" checked>
+          <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[10px] after:left-[16px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-albion-gold"></div>
+          <span class="ml-3 text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-slate-300 peer-checked:text-albion-gold">
+            <span class="w-2 h-2 rounded-full bg-slate-500 peer-checked:bg-albion-gold"></span>
+            Estado Premium
+          </span>
+        </label>
+
+        <!-- Botón de Limpiar Datos -->
+        <button id="resetBtn" title="Restablecer valores" class="p-2.5 rounded-xl bg-albion-card border border-albion-border text-slate-400 hover:text-white hover:border-slate-500 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- Columna Izquierda: Parámetros de Entrada -->
+      <section class="lg:col-span-7 space-y-6">
+        <div class="bg-albion-panel border border-albion-border/80 rounded-2xl p-5 sm:p-6 shadow-xl space-y-6">
+          <div class="border-b border-albion-border pb-3 flex items-center justify-between">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-albion-gold flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+              </svg>
+              Configuración de la Operación
+            </h2>
+            <span class="text-xs text-slate-400">Precios en Silver (Plata)</span>
+          </div>
+
+          <!-- Selector de Tier de Bien de Lujo -->
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2.5">
+              1. Selecciona el Tier del Bien de Lujo
+            </label>
+            <div class="grid grid-cols-3 sm:grid-cols-6 gap-2" id="tierSelector">
+              <!-- Tier 4 -->
+              <button type="button" data-tier="T4" data-value="1000" class="tier-btn active px-2.5 py-3 rounded-xl border border-albion-border bg-albion-card hover:border-albion-gold/60 text-center transition flex flex-col items-center">
+                <span class="text-xs font-bold text-blue-400">T4</span>
+                <span class="text-[11px] text-slate-300 font-mono mt-0.5">1,000</span>
+                <span class="text-[9px] text-slate-500 uppercase">Fijo</span>
+              </button>
+              <!-- Tier 5 -->
+              <button type="button" data-tier="T5" data-value="5000" class="tier-btn px-2.5 py-3 rounded-xl border border-albion-border bg-albion-card hover:border-albion-gold/60 text-center transition flex flex-col items-center">
+                <span class="text-xs font-bold text-red-400">T5</span>
+                <span class="text-[11px] text-slate-300 font-mono mt-0.5">5,000</span>
+                <span class="text-[9px] text-slate-500 uppercase">Fijo</span>
+              </button>
+              <!-- Tier 6 -->
+              <button type="button" data-tier="T6" data-value="25000" class="tier-btn px-2.5 py-3 rounded-xl border border-albion-border bg-albion-card hover:border-albion-gold/60 text-center transition flex flex-col items-center">
+                <span class="text-xs font-bold text-amber-500">T6</span>
+                <span class="text-[11px] text-slate-300 font-mono mt-0.5">25,000</span>
+                <span class="text-[9px] text-slate-500 uppercase">Fijo</span>
+              </button>
+              <!-- Tier 7 -->
+              <button type="button" data-tier="T7" data-value="125000" class="tier-btn px-2.5 py-3 rounded-xl border border-albion-border bg-albion-card hover:border-albion-gold/60 text-center transition flex flex-col items-center">
+                <span class="text-xs font-bold text-yellow-300">T7</span>
+                <span class="text-[11px] text-slate-300 font-mono mt-0.5">125,000</span>
+                <span class="text-[9px] text-slate-500 uppercase">Fijo</span>
+              </button>
+              <!-- Tier 8 -->
+              <button type="button" data-tier="T8" data-value="625000" class="tier-btn px-2.5 py-3 rounded-xl border border-albion-border bg-albion-card hover:border-albion-gold/60 text-center transition flex flex-col items-center">
+                <span class="text-xs font-bold text-white">T8</span>
+                <span class="text-[11px] text-slate-300 font-mono mt-0.5">625,000</span>
+                <span class="text-[9px] text-slate-500 uppercase">Fijo</span>
+              </button>
+              <!-- Custom -->
+              <button type="button" data-tier="CUSTOM" data-value="0" class="tier-btn px-2.5 py-3 rounded-xl border border-albion-border bg-albion-card hover:border-albion-gold/60 text-center transition flex flex-col items-center">
+                <span class="text-xs font-bold text-albion-gold">Manual</span>
+                <span class="text-[11px] text-slate-300 font-mono mt-0.5">Otro</span>
+                <span class="text-[9px] text-slate-500 uppercase">Libre</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Campos de Cantidad y Precios -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Cantidad -->
+            <div>
+              <label for="quantity" class="block text-xs font-medium text-slate-300 mb-1.5">Cantidad de Bienes (Unidades)</label>
+              <div class="relative">
+                <input type="number" id="quantity" value="100" min="1" step="1" class="w-full bg-albion-card border border-albion-border focus:border-albion-gold rounded-xl px-3.5 py-2.5 text-white font-mono text-base focus:ring-1 focus:ring-albion-gold outline-none transition">
+                <span class="absolute right-3 top-2.5 text-xs text-slate-500 pointer-events-none">uds</span>
+              </div>
+            </div>
+
+            <!-- Precio de Compra Unitario -->
+            <div>
+              <label for="buyPrice" class="block text-xs font-medium text-slate-300 mb-1.5">Precio de Compra (Por Unidad)</label>
+              <div class="relative">
+                <input type="number" id="buyPrice" value="820" min="0" step="1" class="w-full bg-albion-card border border-albion-border focus:border-albion-gold rounded-xl px-3.5 py-2.5 text-white font-mono text-base focus:ring-1 focus:ring-albion-gold outline-none transition">
+                <span class="absolute right-3 top-2.5 text-xs text-albion-silver pointer-events-none">Silver</span>
+              </div>
+            </div>
+
+            <!-- Precio de Venta Unitario -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="sellPrice" class="block text-xs font-medium text-slate-300">Precio de Venta (Por Unidad)</label>
+                <span id="tierBaseBadge" class="text-[10px] text-albion-gold bg-albion-gold/10 px-2 py-0.5 rounded-full border border-albion-gold/20">Fijo T4: 1,000</span>
+              </div>
+              <div class="relative">
+                <input type="number" id="sellPrice" value="1000" min="0" step="1" class="w-full bg-albion-card border border-albion-border focus:border-albion-gold rounded-xl px-3.5 py-2.5 text-white font-mono text-base focus:ring-1 focus:ring-albion-gold outline-none transition">
+                <span class="absolute right-3 top-2.5 text-xs text-albion-silver pointer-events-none">Silver</span>
+              </div>
+            </div>
+
+            <!-- Estimación de Peso de la Carga -->
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1.5">Peso estimado de transporte</label>
+              <div class="h-[42px] px-3.5 bg-albion-card/60 border border-albion-border/60 rounded-xl flex items-center justify-between">
+                <span class="text-xs text-slate-400">Peso Total</span>
+                <span id="weightEstimate" class="font-mono text-sm text-slate-200 font-semibold">15.0 kg</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modos de Mercado: Compra y Venta -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <!-- Modalidad de Compra -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-medium text-slate-300">Método de Compra</label>
+              <select id="buyMethod" class="w-full bg-albion-card border border-albion-border focus:border-albion-gold rounded-xl px-3 py-2.5 text-sm text-slate-200 outline-none">
+                <option value="direct">Compra Inmediata (0% Tarifa Setup)</option>
+                <option value="order">Orden de Compra (+2.5% Setup Fee)</option>
+              </select>
+              <p class="text-[11px] text-slate-500">Usa "Orden de Compra" si dejas órdenes puestas en el mercado.</p>
+            </div>
+
+            <!-- Modalidad de Venta -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-medium text-slate-300">Destino / Método de Venta</label>
+              <select id="sellMethod" class="w-full bg-albion-card border border-albion-border focus:border-albion-gold rounded-xl px-3 py-2.5 text-sm text-slate-200 outline-none">
+                <option value="direct_city">Entrega Fija en Ciudad Destino (0% Tarifa / 0% Tax)</option>
+                <option value="market_direct">Venta Directa en Mercado (Tax de Mercado)</option>
+                <option value="market_order">Orden de Venta en Mercado (2.5% Setup + Tax)</option>
+              </select>
+              <p class="text-[11px] text-slate-500">En la ciudad de destino correcta no pagas impuestos de venta al NPC.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guía Rápida de Ciudades de Bienes de Lujo -->
+        <div class="bg-albion-panel/80 border border-albion-border rounded-2xl p-4 text-xs space-y-2 text-slate-400">
+          <div class="font-semibold text-slate-300 flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-albion-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Recordatorio de Destinos Principales:
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px]">
+            <div>• <strong class="text-slate-300">Fort Sterling:</strong> Candelabros rituales</div>
+            <div>• <strong class="text-slate-300">Thetford:</strong> Frascos y urnas de pantano</div>
+            <div>• <strong class="text-slate-300">Lymhurst:</strong> Maderas talladas y tótems</div>
+            <div>• <strong class="text-slate-300">Bridgewatch:</strong> Vasijas y cerámicas</div>
+            <div>• <strong class="text-slate-300">Martlock:</strong> Cristales y ornamentos</div>
+            <div>• <strong class="text-slate-300">Caerleon:</strong> Artículos de contrabando</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Columna Derecha: Tarjetas de Resultados en Tiempo Real y Generador de Reporte -->
+      <section class="lg:col-span-5 space-y-6">
+        
+        <!-- Tarjeta de Ganancia Destacada -->
+        <div class="bg-albion-panel border border-albion-border/80 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+          <div class="absolute -top-12 -right-12 w-32 h-32 bg-albion-gold/10 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Ganancia Neta Estimada</span>
+            <span id="roiBadge" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              +0.00% ROI
+            </span>
+          </div>
+
+          <div class="flex items-baseline gap-2 mb-6">
+            <span id="netProfitDisplay" class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-emerald-400">+0</span>
+            <span class="text-sm font-semibold text-slate-400">Silver</span>
+          </div>
+
+          <!-- Métricas Clave Secundarias -->
+          <div class="grid grid-cols-2 gap-3 pt-2 border-t border-albion-border/70 text-xs">
+            <div class="bg-albion-card/50 p-3 rounded-xl border border-albion-border/40">
+              <span class="text-slate-400 block mb-1">Inversión Total</span>
+              <span id="totalCostDisplay" class="text-sm font-bold font-mono text-white">0</span>
+              <span class="text-[10px] text-slate-500 block">Silver</span>
+            </div>
+            <div class="bg-albion-card/50 p-3 rounded-xl border border-albion-border/40">
+              <span class="text-slate-400 block mb-1">Ingreso Bruto</span>
+              <span id="grossIncomeDisplay" class="text-sm font-bold font-mono text-slate-200">0</span>
+              <span class="text-[10px] text-slate-500 block">Silver</span>
+            </div>
+            <div class="bg-albion-card/50 p-3 rounded-xl border border-albion-border/40">
+              <span class="text-slate-400 block mb-1">Tarifas e Impuestos</span>
+              <span id="totalFeesDisplay" class="text-sm font-bold font-mono text-rose-400">0</span>
+              <span class="text-[10px] text-slate-500 block">Silver deducido</span>
+            </div>
+            <div class="bg-albion-card/50 p-3 rounded-xl border border-albion-border/40">
+              <span class="text-slate-400 block mb-1">Profit x Unidad</span>
+              <span id="unitProfitDisplay" class="text-sm font-bold font-mono text-emerald-400">0</span>
+              <span class="text-[10px] text-slate-500 block">Silver / ud</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apartado de Reporte Financiero de Plata -->
+        <div class="bg-albion-panel border border-albion-border/80 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+          <div class="flex items-center justify-between border-b border-albion-border pb-3">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-albion-silver flex items-center gap-2">
+              <svg class="w-4 h-4 text-albion-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              Reporte de Plata y Ganancia
+            </h3>
+            <span class="text-[11px] text-slate-400 font-mono" id="reportDate">Hoy</span>
+          </div>
+
+          <p class="text-xs text-slate-400">
+            Desglose narrativo del flujo de plata generado paso a paso para tus registros de viaje o gremio.
+          </p>
+
+          <!-- Cuadro de texto del reporte generado -->
+          <div class="relative">
+            <textarea id="reportOutput" readonly rows="8" class="w-full bg-albion-card border border-albion-border rounded-xl p-3 text-xs font-mono text-slate-300 resize-none focus:outline-none select-all leading-relaxed"></textarea>
+          </div>
+
+          <!-- Botones de Acción del Reporte -->
+          <div class="flex items-center gap-2">
+            <button id="copyReportBtn" class="flex-1 py-2.5 px-4 bg-albion-card border border-albion-border hover:border-albion-gold hover:text-albion-gold rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition active:scale-[0.98]">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+              </svg>
+              <span id="copyBtnText">Copiar Reporte</span>
+            </button>
+            <button id="downloadReportBtn" class="py-2.5 px-3.5 bg-albion-card border border-albion-border hover:border-slate-500 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition" title="Descargar como archivo de texto">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Notificación Flotante Toast para feedback de copia -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-albion-card border border-albion-gold/60 text-albion-gold px-4 py-2.5 rounded-xl shadow-2xl text-xs font-medium flex items-center gap-2 transform translate-y-20 opacity-0 transition duration-300 pointer-events-none">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      <span id="toastMessage">Reporte copiado al portapapeles</span>
+    </div>
+  </div>
+
+  <script>
+    // Definición de pesos oficiales aproximados de bienes de lujo en Albion (kg por unidad)
+    const TIER_WEIGHTS = {
+      'T4': 0.15,
+      'T5': 0.15,
+      'T6': 0.15,
+      'T7': 0.15,
+      'T8': 0.15,
+      'CUSTOM': 0.15
+    };
+
+    // Referencias al DOM
+    const quantityInput = document.getElementById('quantity');
+    const buyPriceInput = document.getElementById('buyPrice');
+    const sellPriceInput = document.getElementById('sellPrice');
+    const premiumToggle = document.getElementById('premiumToggle');
+    const buyMethodSelect = document.getElementById('buyMethod');
+    const sellMethodSelect = document.getElementById('sellMethod');
+    const tierSelector = document.getElementById('tierSelector');
+    const tierButtons = tierSelector.querySelectorAll('.tier-btn');
+    const tierBaseBadge = document.getElementById('tierBaseBadge');
+
+    // Displays
+    const netProfitDisplay = document.getElementById('netProfitDisplay');
+    const roiBadge = document.getElementById('roiBadge');
+    const totalCostDisplay = document.getElementById('totalCostDisplay');
+    const grossIncomeDisplay = document.getElementById('grossIncomeDisplay');
+    const totalFeesDisplay = document.getElementById('totalFeesDisplay');
+    const unitProfitDisplay = document.getElementById('unitProfitDisplay');
+    const weightEstimate = document.getElementById('weightEstimate');
+    const reportOutput = document.getElementById('reportOutput');
+    const reportDate = document.getElementById('reportDate');
+    const copyReportBtn = document.getElementById('copyReportBtn');
+    const copyBtnText = document.getElementById('copyBtnText');
+    const downloadReportBtn = document.getElementById('downloadReportBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    let currentTier = 'T4';
+
+    // Formateador de números estilo Albion (separador con comas)
+    function formatSilver(val) {
+      return Math.round(val).toLocaleString('en-US');
+    }
+
+    // Mostrar feedback Toast
+    function showToast(msg) {
+      toastMessage.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    // Lógica Central de Cálculo
+    function calculate() {
+      const qty = Math.max(0, parseInt(quantityInput.value) || 0);
+      const buyPrice = Math.max(0, parseFloat(buyPriceInput.value) || 0);
+      const sellPrice = Math.max(0, parseFloat(sellPriceInput.value) || 0);
+      const hasPremium = premiumToggle.checked;
+      const buyMethod = buyMethodSelect.value;
+      const sellMethod = sellMethodSelect.value;
+
+      // 1. Costo Base de Compra
+      const rawPurchaseCost = qty * buyPrice;
+
+      // 2. Tasa por Orden de Compra (2.5% de setup fee si aplica)
+      const buySetupFee = buyMethod === 'order' ? rawPurchaseCost * 0.025 : 0;
+      const totalInvestment = rawPurchaseCost + buySetupFee;
+
+      // 3. Ingreso Bruto
+      const grossIncome = qty * sellPrice;
+
+      // 4. Tasas de Venta
+      // Impuesto de mercado en Albion: 4% con Premium, 8% sin Premium
+      const marketTaxRate = hasPremium ? 0.04 : 0.08;
+      let sellMarketTax = 0;
+      let sellSetupFee = 0;
+
+      if (sellMethod === 'direct_city') {
+        // En la ciudad destino entregado al NPC o venta fija oficial: 0% tasas
+        sellMarketTax = 0;
+        sellSetupFee = 0;
+      } else if (sellMethod === 'market_direct') {
+        // Venta inmediata en tablero de mercado: solo paga impuesto de mercado
+        sellMarketTax = grossIncome * marketTaxRate;
+        sellSetupFee = 0;
+      } else if (sellMethod === 'market_order') {
+        // Orden de venta en el tablero: 2.5% de setup fee + impuesto de mercado
+        sellSetupFee = grossIncome * 0.025;
+        sellMarketTax = grossIncome * marketTaxRate;
+      }
+
+      const totalFees = buySetupFee + sellSetupFee + sellMarketTax;
+
+      // 5. Ganancia Neta
+      const netProfit = grossIncome - totalInvestment - (sellSetupFee + sellMarketTax);
+      const roi = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
+      const unitProfit = qty > 0 ? (netProfit / qty) : 0;
+
+      // Estimación de peso
+      const unitWeight = TIER_WEIGHTS[currentTier] || 0.15;
+      const totalWeight = (qty * unitWeight).toFixed(1);
+
+      // Actualizar Interfaz Gráfica
+      updateUI({
+        qty,
+        buyPrice,
+        sellPrice,
+        hasPremium,
+        buyMethod,
+        sellMethod,
+        rawPurchaseCost,
+        buySetupFee,
+        totalInvestment,
+        grossIncome,
+        sellSetupFee,
+        sellMarketTax,
+        totalFees,
+        netProfit,
+        roi,
+        unitProfit,
+        totalWeight
+      });
+    }
+
+    function updateUI(data) {
+      // Formateo y coloreado de Profit
+      if (data.netProfit >= 0) {
+        netProfitDisplay.textContent = '+' + formatSilver(data.netProfit);
+        netProfitDisplay.className = 'text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-emerald-400';
+        roiBadge.className = 'px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        roiBadge.textContent = '+' + data.roi.toFixed(2) + '% ROI';
+      } else {
+        netProfitDisplay.textContent = formatSilver(data.netProfit);
+        netProfitDisplay.className = 'text-3xl sm:text-4xl font-extrabold font-mono tracking-tight text-rose-400';
+        roiBadge.className = 'px-2.5 py-1 text-xs font-bold rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20';
+        roiBadge.textContent = data.roi.toFixed(2) + '% ROI';
+      }
+
+      totalCostDisplay.textContent = formatSilver(data.totalInvestment);
+      grossIncomeDisplay.textContent = formatSilver(data.grossIncome);
+      totalFeesDisplay.textContent = '-' + formatSilver(data.totalFees);
+      unitProfitDisplay.textContent = (data.unitProfit >= 0 ? '+' : '') + formatSilver(data.unitProfit);
+      weightEstimate.textContent = `${data.totalWeight} kg`;
+
+      // Generar Reporte Narrativo en Texto Limpio
+      const now = new Date();
+      reportDate.textContent = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      const buyMethodName = data.buyMethod === 'order' ? 'Orden de Compra (2.5% fee)' : 'Compra Directa';
+      const sellMethodName = data.sellMethod === 'direct_city' 
+        ? 'Entrega Fija en Ciudad (Sin Impuesto)' 
+        : (data.sellMethod === 'market_order' ? 'Orden de Venta (2.5% fee + Tax)' : 'Venta Directa en Mercado');
+
+      const narrativeReport = 
+`==============================================
+ REPORTE DE PLATA Y GANANCIA: ALBION ONLINE
+==============================================
+Fecha: ${now.toLocaleString('es-ES')}
+Artículo: Bien de Lujo [${currentTier}]
+Cantidad: ${formatSilver(data.qty)} unidades | Peso: ~${data.totalWeight} kg
+Cuenta: ${data.hasPremium ? 'Premium Activo (Tax 4%)' : 'Sin Premium (Tax 8%)'}
+
+1. FLUJO DE COMPRA / INVERSIÓN:
+   - Precio Compra Unitario: ${formatSilver(data.buyPrice)} Silver
+   - Método: ${buyMethodName}
+   - Costo Base Ítems: ${formatSilver(data.rawPurchaseCost)} Silver
+   - Tarifa de Montaje de Orden: ${formatSilver(data.buySetupFee)} Silver
+   -------------------------------------------
+   TOTAL INVERTIDO (CAPITAL): ${formatSilver(data.totalInvestment)} Silver
+
+2. FLUJO DE VENTA / RETORNO:
+   - Precio Venta Unitario: ${formatSilver(data.sellPrice)} Silver
+   - Destino: ${sellMethodName}
+   - Ingreso Bruto: ${formatSilver(data.grossIncome)} Silver
+   - Tarifa de Venta / Setup: -${formatSilver(data.sellSetupFee)} Silver
+   - Impuesto de Mercado: -${formatSilver(data.sellMarketTax)} Silver
+   -------------------------------------------
+   TOTAL RECUPERADO LIMPIO: ${formatSilver(data.grossIncome - data.sellSetupFee - data.sellMarketTax)} Silver
+
+3. BALANCE FINAL Y RENDIMIENTO:
+   -------------------------------------------
+   SILVER NETO GANADO: ${data.netProfit >= 0 ? '+' : ''}${formatSilver(data.netProfit)} Silver
+   MARGEN DE RETORNO (ROI): ${data.roi.toFixed(2)}%
+   GANANCIA POR UNIDAD: ${data.unitProfit >= 0 ? '+' : ''}${formatSilver(data.unitProfit)} Silver/ud
+==============================================
+Resumen: Para obtener ${formatSilver(data.netProfit)} Silver limpios, se necesitó una inversión inicial de ${formatSilver(data.totalInvestment)} Silver transportando ${data.totalWeight} kg.`;
+
+      reportOutput.value = narrativeReport;
+    }
+
+    // Manejo del selector de Tiers
+    tierButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tierButtons.forEach(b => {
+          b.classList.remove('border-albion-gold', 'bg-albion-gold/20', 'shadow-md');
+          b.classList.add('border-albion-border', 'bg-albion-card');
+        });
+
+        btn.classList.remove('border-albion-border', 'bg-albion-card');
+        btn.classList.add('border-albion-gold', 'bg-albion-gold/20', 'shadow-md');
+
+        const tier = btn.dataset.tier;
+        const val = parseInt(btn.dataset.value);
+        currentTier = tier;
+
+        if (tier !== 'CUSTOM') {
+          sellPriceInput.value = val;
+          tierBaseBadge.textContent = `Fijo ${tier}: ${formatSilver(val)}`;
+        } else {
+          tierBaseBadge.textContent = 'Precio Manual';
+        }
+
+        calculate();
+      });
+    });
+
+    // Eventos de entrada para recálculo instantáneo
+    [quantityInput, buyPriceInput, sellPriceInput].forEach(input => {
+      input.addEventListener('input', calculate);
+    });
+
+    [premiumToggle, buyMethodSelect, sellMethodSelect].forEach(element => {
+      element.addEventListener('change', calculate);
+    });
+
+    // Copiar al portapapeles con compatibilidad segura
+    copyReportBtn.addEventListener('click', () => {
+      reportOutput.select();
+      reportOutput.setSelectionRange(0, 99999);
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          copyBtnText.textContent = '¡Copiado!';
+          showToast('Reporte financiero copiado al portapapeles');
+          setTimeout(() => {
+            copyBtnText.textContent = 'Copiar Reporte';
+          }, 2000);
+        }
+      } catch (err) {
+        showToast('Selecciona el texto para copiarlo');
+      }
+    });
+
+    // Descargar Reporte en archivo .txt
+    downloadReportBtn.addEventListener('click', () => {
+      const text = reportOutput.value;
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `albion_reporte_${currentTier}_${Date.now()}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Archivo de reporte descargado');
+    });
+
+    // Restablecer valores predeterminados
+    resetBtn.addEventListener('click', () => {
+      quantityInput.value = 100;
+      buyPriceInput.value = 820;
+      sellPriceInput.value = 1000;
+      buyMethodSelect.value = 'direct';
+      sellMethodSelect.value = 'direct_city';
+      premiumToggle.checked = true;
+
+      // Activar botón T4 por defecto
+      tierButtons.forEach(b => {
+        if (b.dataset.tier === 'T4') {
+          b.click();
+        }
+      });
+      showToast('Valores reiniciados');
+    });
+
+    // Inicialización al cargar la página
+    window.addEventListener('DOMContentLoaded', () => {
+      // Activar T4 visualmente por defecto
+      const t4Btn = Array.from(tierButtons).find(b => b.dataset.tier === 'T4');
+      if (t4Btn) {
+        t4Btn.classList.add('border-albion-gold', 'bg-albion-gold/20');
+      }
+      calculate();
+    });
+  </script>
+</body>
+</html>
